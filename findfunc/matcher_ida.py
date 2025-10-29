@@ -315,7 +315,7 @@ class MatcherIda:
                 continue
             lastva = self.info.startva
             while lastva != idaapi.BADADDR:
-                lastva = ida_bytes.bin_search(lastva + 1, self.info.endva, r.patterncompiled, idaapi.BIN_SEARCH_FORWARD)
+                lastva, _ = ida_bytes.bin_search(lastva + 1, self.info.endva, r.patterncompiled, idaapi.BIN_SEARCH_FORWARD)
                 if lastva != idaapi.BADADDR:
                     yield lastva
 
@@ -390,7 +390,7 @@ class MatcherIda:
                 return
             for r in rules:
                 for chunk in func.get_as_chunks():
-                    hit = ida_bytes.bin_search(chunk[0], chunk[1], r.patterncompiled, idaapi.BIN_SEARCH_FORWARD)
+                    hit, _ = ida_bytes.bin_search(chunk[0], chunk[1], r.patterncompiled, idaapi.BIN_SEARCH_FORWARD)
                     isinfunc = hit != idaapi.BADADDR
                     if isinfunc:
                         passed = not r.inverted
