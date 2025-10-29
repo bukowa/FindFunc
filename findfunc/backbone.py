@@ -343,11 +343,24 @@ class RuleBytePattern(Rule):
     def get_data(self):
         return self.pattern
 
-    def set_data(self, data) -> bool:
-        if RuleBytePattern.is_raw_pattern(data):
-            self.pattern = str(data)
+    def set_data(self, data: str) -> bool:
+        data = data.strip()
+        if not data:
+            return False
+
+        import ida_bytes
+        import idaapi
+
+        # Use IDA's built-in function to validate the pattern directly.
+        ea = idaapi.get_imagebase()
+        err = ida_bytes.parse_binpat_str(ida_bytes.compiled_binpat_vec_t(), ea, data, 16)
+
+        # A non-empty string indicates an error. None or '' indicate success.
+        if not err:
+            self.pattern = data
             return True
-        return False
+        
+        raise ValueError(f"Invalid byte pattern. IDA says: '{err}'")
 
 
 class RuleCode(Rule):
